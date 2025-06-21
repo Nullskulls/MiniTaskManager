@@ -1,8 +1,13 @@
 import json
+import datetime
 
 def reader(filename = "tasks.json"):
     with open(filename, "r") as file:
-        return json.load(file)
+        current = json.loads(file.read())
+        if current is not None:
+             return current
+        else:
+            return {}
 
 
 def loader(filename = "tasks.json"):
@@ -10,29 +15,30 @@ def loader(filename = "tasks.json"):
     try:
         tasks = reader(filename)
     except FileNotFoundError:
-        with open("tasks.json", "w"):
+        with open("tasks.json", "w") as file:
+            current_datetime = datetime.datetime.now()
+            file.write(json.dumps({"Welcome Task" : [f"Created: {current_datetime}", f"Deadline: undefined", "Priority: undefined"]}))
             tasks = reader(filename)
-
-
     if tasks is not None:
         return tasks
     else:
         raise "Unable to create file, Please check permissions."
 
-def saver(tasks):
-    with open("tasks.json", "w") as file:
-        json.dump(tasks, file)
+def saver(data, filename = "tasks.json"):
+    with open(filename, "w") as file:
+        json.dump(data, file)
 
 def settings_loader(filename = "preferences.json"):
     try:
-        with open("preferences.json", "r") as preferences:
-            filename = json.load(preferences)["file_name"]
-            return settings_loader(filename)
+        settings = reader(filename)
+        return settings
     except FileNotFoundError:
-        print("No preferences.json")
-        with open("preferences.json", "w") as preferences:
-            holder = input("please select a preferred json file: ")
+        with open("preferences.json", "w") as file:
             settings = {
-                "file_name": holder,
+                "task_list": "tasks.json",
             }
-            preferences.write(json.dumps(settings))
+            json.dump(settings, file)
+            return settings
+
+time = datetime.datetime.now()
+print(time)

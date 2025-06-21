@@ -8,9 +8,11 @@ def placeholder(): print("W")
 def main():
     settings = Manipulator.settings_loader()
     tasks = Manipulator.loader(settings["task_list"])
+    if settings["display"] == "t":
+        Manipulator.displayer(tasks, settings["bias"])
     while True:
 
-        user_input = input("[1] Add Task \n[2] Remove Task \n[3] Edit Task \n[4] Display\n[0] Exit \n$")
+        user_input = input("[1] Add Task \n[2] Remove Task \n[3] Edit Task \n[4] Display\n[5] Settings\n[0] Exit \n$ ")
         match user_input:
             case "1":
                 task_name = input("Enter Task Name: ")
@@ -31,10 +33,10 @@ def main():
                     continue
             case "3":
                 task_name = input("Task name: ")
-                confirmation = input("Are you sure? (y/n) ")
+                confirmation = input("Are you sure? (y/n): ")
                 while True:
                     if confirmation[0].lower() == "y" and len(confirmation) < 20:
-                        edit_choice = input("What would you like to edit?\n[1] Task Name\n[2] Start Date\n[3] Deadline\n[4] Priority\n[5] Settings\n[0] Cancel\n$ ")
+                        edit_choice = input("What would you like to edit?\n[1] Task Name\n[2] Start Date\n[3] Deadline\n[4] Priority\n[0] Cancel\n$ ")
                         match edit_choice:
                             case "1":
                                 new_task_name = input("Enter New Task Name: ")
@@ -51,7 +53,7 @@ def main():
                                 print("Start Date Modified! \n")
                             case "3":
                                 new_dead_line = input("Enter New Deadline.\nFormat YYYY-MM-DD-HH\n$ ")
-                                tasks[task_name.lower()][0] = new_dead_line
+                                tasks[task_name.lower()][1] = new_dead_line
                                 Manipulator.saver(tasks)
                                 print("Start Date Modified! \n")
                             case "4":
@@ -61,13 +63,18 @@ def main():
                                 print("Canceling...")
                                 break
             case "4":
-                placeholder()
-            case "6":
+                Manipulator.displayer(tasks, settings["bias"])
+            case "5":
                 setting = input("Which Setting Would You Like To Change?\n[1] Sorting Bias\n[2] Display On Entry")
                 match setting:
                     case "1":
-                        bias = input("What Would You Like To Sort Based Off Of?\n[1] Priority\n [2] Timeline\n**Note: Default Is Priority**")
-                placeholder()
+                        bias = input("What Would You Like To Sort Based Off Of?\n[P] Priority\n[T] Timeline\n**Note: Default Is Priority**\n$ ")
+                        settings["bias"] = bias.lower()
+                        Manipulator.saver(filename="preferences.json", data=settings)
+                    case "2":
+                        boolean_entry = input("Would You Like To Display On Entry?\n[T] True\n[F] False\n**Note: Default Is False**\n$ ")
+                        settings["display"] = boolean_entry[0].lower()
+                        Manipulator.saver(filename="preferences.json", data=settings)
             case "0":
                 sys.exit("Exited successfully. \n")
 

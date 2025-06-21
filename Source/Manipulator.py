@@ -1,13 +1,17 @@
 import json
 import datetime
+import sys
 
 def reader(filename = "tasks.json"):
     with open(filename, "r") as file:
-        current = json.loads(file.read())
-        if current is not None:
-             return current
-        else:
-            return {}
+        try:
+            current = json.loads(file.read())
+            if current is not None:
+                 return current
+            else:
+                return {}
+        except json.decoder.JSONDecodeError:
+            sys.exit("Files Created Please Run Application Again.")
 
 
 def loader(filename = "tasks.json"):
@@ -36,9 +40,36 @@ def settings_loader(filename = "preferences.json"):
         with open("preferences.json", "w") as file:
             settings = {
                 "task_list": "tasks.json",
+                "display": "f",
+                "bias": "p",
             }
             json.dump(settings, file)
             return settings
 
-time = datetime.datetime.now()
-print(time)
+def displayer(tasks, bias):
+    if bias == "p":
+        temp = tasks
+        n = 1
+        print("    Format: Name, Start date, Deadline, Priority")
+        for task in list(temp.keys()):
+            if tasks[task][2] == "h":
+                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, {temp[task][2]} ")
+                temp.pop(task)
+                n += 1
+        for task in list(temp.keys()):
+            if tasks[task][2] == "m":
+                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]} ")
+                temp.pop(task)
+                n += 1
+        for task in list(temp.keys()):
+            if tasks[task][2] == "l":
+                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]} ")
+                temp.pop(task)
+                n += 1
+        for task in list(temp.keys()):
+            print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]} ")
+            temp.pop(task)
+            n +=1
+        input("Press Enter to continue...")
+    elif bias == "t":
+        print(" no")

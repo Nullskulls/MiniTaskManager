@@ -19,7 +19,7 @@ def loader(filename = "tasks.json"):
     try:
         tasks = reader(filename)
     except FileNotFoundError:
-        with open("tasks.json", "w") as file:
+        with open(filename, "w") as file:
             current_datetime = datetime.datetime.now()
             file.write(json.dumps({"Welcome Task" : [f"Created: {current_datetime}", f"Deadline: undefined", "Priority: undefined"]}))
             tasks = reader(filename)
@@ -53,23 +53,34 @@ def displayer(tasks, bias):
         print("    Format: Name, Start date, Deadline, Priority")
         for task in list(temp.keys()):
             if tasks[task][2] == "h":
-                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, {temp[task][2]} ")
+                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, High ")
                 temp.pop(task)
                 n += 1
         for task in list(temp.keys()):
             if tasks[task][2] == "m":
-                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]} ")
+                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, Medium ")
                 temp.pop(task)
                 n += 1
         for task in list(temp.keys()):
             if tasks[task][2] == "l":
-                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]} ")
+                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, Low ")
                 temp.pop(task)
                 n += 1
         for task in list(temp.keys()):
-            print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]} ")
+            print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, {temp[task][2]}.upper() ")
             temp.pop(task)
             n +=1
         input("Press Enter to continue...")
     elif bias == "t":
-        print(" no")
+        holder = 20000
+        temp = tasks
+        current_formatted_time = datetime.datetime.now().strftime("%Y-%m-%d-%H")
+        for _ in enumerate(tasks):
+            for task in list(tasks.keys()):
+                deadline_formatted = datetime.datetime.strptime(tasks[task][1],"%Y-%m-%d-%H")
+                delta = deadline_formatted - current_formatted_time
+                if delta > holder:
+                    delta = holder
+                    print(delta)
+
+

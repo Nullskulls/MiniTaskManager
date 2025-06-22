@@ -20,8 +20,8 @@ def loader(filename = "tasks.json"):
         tasks = reader(filename)
     except FileNotFoundError:
         with open(filename, "w") as file:
-            current_datetime = datetime.datetime.now()
-            file.write(json.dumps({"Welcome Task" : [f"Created: {current_datetime}", f"Deadline: undefined", "Priority: undefined"]}))
+            current_datetime = datetime.datetime.now().strftime("%Y-%m-%d-%H")
+            file.write(json.dumps({"welcome task" : [f"Created: {current_datetime}", f"Deadline: undefined", "Priority: undefined"]}))
             tasks = reader(filename)
     if tasks is not None:
         return tasks
@@ -53,34 +53,44 @@ def displayer(tasks, bias):
         print("    Format: Name, Start date, Deadline, Priority")
         for task in list(temp.keys()):
             if tasks[task][2] == "h":
-                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, High ")
+                print(f"{n} | {task.title()}, {temp[task][0]}, {temp[task][1]}, High ")
                 temp.pop(task)
                 n += 1
         for task in list(temp.keys()):
             if tasks[task][2] == "m":
-                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, Medium ")
+                print(f"{n} | {task.title()}, {temp[task][0]}, {temp[task][1]}, Medium ")
                 temp.pop(task)
                 n += 1
         for task in list(temp.keys()):
             if tasks[task][2] == "l":
-                print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, Low ")
+                print(f"{n} | {task.title()}, {temp[task][0]}, {temp[task][1]}, Low ")
                 temp.pop(task)
                 n += 1
         for task in list(temp.keys()):
-            print(f"{n} | {task}, {temp[task][0]}, {temp[task][1]}, {temp[task][2]}.upper() ")
+            print(f"{n} | {task.title()}, {temp[task][0]}, {temp[task][1]}, {temp[task][2].upper()} ")
             temp.pop(task)
             n +=1
         input("Press Enter to continue...")
-    elif bias == "t":
-        holder = 20000
+    if bias.lower() == "t":
         temp = tasks
-        current_formatted_time = datetime.datetime.now().strftime("%Y-%m-%d-%H")
-        for _ in enumerate(tasks):
-            for task in list(tasks.keys()):
-                deadline_formatted = datetime.datetime.strptime(tasks[task][1],"%Y-%m-%d-%H")
-                delta = deadline_formatted - current_formatted_time
-                if delta > holder:
-                    delta = holder
-                    print(delta)
+        holder = {}
+        for task in temp:
+            deadline = datetime.datetime.strptime(tasks[task][1], "%Y-%m-%d-%H")
+            current = datetime.datetime.now()
+            delta = (deadline - current).days
+            holder[delta] = task
+        x = 1
+        for _ in list(holder.keys()):
+            winner = parser(holder)
+            print(f"{x} | {holder[winner]}, {tasks[holder[winner]][0]}, {tasks[holder[winner]][1]}, {tasks[holder[winner]][2].upper()} ")
+            holder.pop(winner)
+            x+=1
+
+def parser(listy):
+    time_holder = 10000000
+    for time in listy:
+        if time < time_holder:
+            time_holder = time
+    return time_holder
 
 
